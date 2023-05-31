@@ -22,14 +22,13 @@ if ($method == "POST") {
 
     $firstName = $data->firstName;
     $lastName = $data->lastName;
-
     
-    $sql = "INSERT INTO names (first_name, last_name) VALUES ('$firstName', '$lastName')";
-    
+    $sql = "INSERT INTO names (first_name, last_name) VALUES ('$firstName', '$lastName')";    
     $result = $conn->query($sql);
-    echo "Hello $firstName $lastName";
 
-    echo $result;
+    $id = $conn->insert_id;
+    
+    echo "Hello $firstName $lastName! Your id is $id";
 }
 
 if ($method == "GET") {
@@ -47,9 +46,43 @@ if ($method == "GET") {
 
 }
 
-// POST {firstName: string, lastName: string},
+if ($method == "PUT"){
 
-// get /names     -> firstNames...lastNames...
+    $body = file_get_contents('php://input');
+    $data = json_decode($body);
+
+    $firstName = $data->firstName;
+    $lastName = $data->lastName;
+    $id = $data->id;
+    
+    $sql = "UPDATE names
+    SET first_name = '$firstName', last_name = '$lastName'
+    WHERE id=$id";
+
+    $result = $conn->query($sql);
+
+    if ($result) {
+        echo 'Update success!';
+    } else {
+        echo 'error';
+    }
+}
+
+if ($method == 'DELETE') {
+    $body = file_get_contents("php://input");
+    $data = json_decode($body);
+
+    $id = $data->id;
+
+    $sql = "DELETE FROM names WHERE id = $id";
+    $result = $conn->query($sql);
+
+    if ($result) {
+        echo 'Deleted';
+    } else {
+        echo 'Error';
+    }
+}
 
 
 ?>
