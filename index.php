@@ -41,7 +41,7 @@ if ($method == "GET") {
         $rows[] = $row;
     }
     
-
+    
     echo json_encode($rows);
 
 }
@@ -61,10 +61,12 @@ if ($method == "PUT"){
 
     $result = $conn->query($sql);
 
-    if ($result) {
-        echo 'Update success!';
+    if ($result && $conn->affected_rows > 0) {
+        echo 'Deleted';
     } else {
-        echo 'error';
+        http_response_code(404);
+        header("Content-Type: application-json");
+        echo json_encode(["error" => "Resource not found"]);
     }
 }
 
@@ -77,10 +79,12 @@ if ($method == 'DELETE') {
     $sql = "DELETE FROM names WHERE id = $id";
     $result = $conn->query($sql);
 
-    if ($result) {
+    if ($result && $conn->affected_rows > 0) {
         echo 'Deleted';
     } else {
-        echo 'Error';
+        http_response_code(404);
+        header("Content-Type: application-json");
+        echo json_encode(["error" => "Resource not found"]);
     }
 }
 
