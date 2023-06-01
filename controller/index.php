@@ -1,20 +1,22 @@
 <?php
+require_once 'config/database.php';
 
 header("Access-Control-Allow-Origin: *");
 $method = $_SERVER['REQUEST_METHOD'];
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "test";
+if ($method == "GET") {
 
+    $sql = "SELECT * from names";
+    $result = $conn->query($sql);
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+    $rows = array();
+    while ($row = $result->fetch_assoc()) {
+        $rows[] = $row;
+    }
+    
+    echo json_encode($rows);
 
-if ($conn->connect_error) {
-    die("Connections failed:" . $conn->connect_error);
 }
-
 
 if ($method == "POST") {
     $body = file_get_contents('php://input');
@@ -42,20 +44,6 @@ if ($method == "POST") {
     echo "Hello $firstName $lastName! Your id is $id";
 }
 
-if ($method == "GET") {
-
-    $sql = "SELECT * from names";
-    $result = $conn->query($sql);
-
-    $rows = array();
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
-    }
-    
-
-    echo json_encode($rows);
-
-}
 
 if ($method == "PUT"){
 
@@ -104,7 +92,7 @@ if ($method == 'DELETE') {
         echo 'Deleted';
         return;
     } 
-    
+
     http_response_code(404);
     header("Content-Type: application-json");
     echo json_encode(["error" => "Resource not found"]);
